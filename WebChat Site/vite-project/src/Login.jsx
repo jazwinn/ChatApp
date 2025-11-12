@@ -12,20 +12,11 @@ export default function Login({StompClient, SetMessage, SetUser}){
     
     const OnMessageReceived = (payload) => {
         const message = JSON.parse(payload.body);
-
-        if (message.type === 'JOIN') {
-            console.log("New member joined:", message.sender);
-            SetMessage(prevMessages => [...(prevMessages || []), { type: message.type, sender: message.sender }]);
-        } else if (message.type === 'LEAVE') {
-            console.log("Member left:", message.sender);
-            SetMessage(prevMessages => [...(prevMessages || []), { type: message.type, sender: message.sender }]);
-        } else {
-            // Normal chat message
-            SetMessage(prevMessages => [
-                ...(prevMessages || []),
-                { type: message.type, sender: message.sender, content: message.message }
-            ]);
-        }
+        console.log("message receive");
+        SetMessage(prevMessages => [
+            ...(prevMessages || []),
+            { type: message.type, sender: message.sender, content: message.message }
+        ]);
     };
 
 
@@ -35,7 +26,7 @@ export default function Login({StompClient, SetMessage, SetUser}){
         // Tell your username to the server
         StompClient.current.send("/app/chat.addUser",
             {},
-            JSON.stringify({sender: Name, type: 'JOIN'})
+            JSON.stringify({sender: Name, type: 'ENTER'})
         )
         SetUser(Name)
         navigate("/chat");

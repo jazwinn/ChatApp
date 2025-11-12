@@ -16,7 +16,7 @@ function App() {
         <div className='flex justify-center h-screen w-110'>
           <Routes>
             <Route path="/" element={<Login SetMessage={setMessage} SetUser={setUser} StompClient={stompClient} />} />
-            <Route path="/chat" element={<Chat Message={msg} name={User} StompClient={stompClient}/>} />
+            <Route path="/chat" element={<Chat SetMessage={setMessage} Message={msg} name={User} StompClient={stompClient}/>} />
           </Routes>
         </div>
       </div>

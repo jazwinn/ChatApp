@@ -1,19 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useRef } from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from './Login'
 import Chat from './Chat'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [msg, setMessage] = useState([])
+  const [User, setUser] = useState("")
+
+  const stompClient = useRef(null);
 
   return (
     <>
-      <div className="h-screen w-screen overflow-hidden">
-        {/* <Login /> */}
-        <Chat/>
+    <BrowserRouter>
+      <div className="flex justify-center items-center h-screen w-screen">
+        <div className='flex justify-center h-screen w-110'>
+          <Routes>
+            <Route path="/" element={<Login SetMessage={setMessage} SetUser={setUser} StompClient={stompClient} />} />
+            <Route path="/chat" element={<Chat Message={msg} name={User} StompClient={stompClient}/>} />
+          </Routes>
+        </div>
       </div>
+    </BrowserRouter>
     </>
   )
 }

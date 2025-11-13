@@ -19,16 +19,30 @@ export default function Login({StompClient, SetMessage, SetUser}){
         ]);
     };
 
+    const OnMessagesReceived = (payload) => {
+        const messages = JSON.parse(payload.body);
+        console.log("messages receive");
+        SetMessage(prevMessages => [
+            ...(prevMessages || []),
+            ...messages.map(msg=>({ type: msg.type, sender: msg.sender, content: msg.message }))
+        ]);
+    };
+
 
     const OnConnect = (Name)=>{
         StompClient.current.subscribe('/topic/public', OnMessageReceived);
+        StompClient.current.subscribe('/user/queue/messages', OnMessagesReceived)
 
         // Tell your username to the server
         StompClient.current.send("/app/chat.addUser",
             {},
             JSON.stringify({sender: Name, type: 'ENTER'})
-        )
-        SetUser(Name)
+        );
+        SetUser(Name);
+        setTimeout(() => {
+            StompClient.current.send("/app/chat.loadMessages", {}, {});
+        }, 5000);
+        
         navigate("/chat");
     }
 
@@ -43,7 +57,7 @@ export default function Login({StompClient, SetMessage, SetUser}){
             var socket = new SockJS("http://localhost:8080/ws");
             StompClient.current = Stomp.over(socket); // assign to ref
 
-            StompClient.current.connect({}, () => OnConnect(Name), OnError);
+            StompClient.current.connect({ username: Name }, () => OnConnect(Name), OnError);
         }
     }
 

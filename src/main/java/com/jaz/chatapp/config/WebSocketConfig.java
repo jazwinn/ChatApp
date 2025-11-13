@@ -17,7 +17,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*");
     }
 
     @Override
@@ -33,13 +33,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String username = accessor.getFirstNativeHeader("username");
-                    //System.out.println("CONNECT received with username header: " + username);
-                    if (username != null) {
+                    System.out.println("CONNECT received with username header: " + username);
+                    if (username != null && !username.isEmpty()) {
                         accessor.setUser(new StompPrincipal(username));
+                        System.out.println("Principal set: " + accessor.getUser().getName());
                     }
                 }
+
                 return message;
             }
         });

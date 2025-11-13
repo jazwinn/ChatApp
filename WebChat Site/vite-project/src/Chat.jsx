@@ -37,6 +37,7 @@ export default function Chat({SetMessage, Message, name, StompClient }) {
                 
                 const data = await response.json();
                 const messageContent = data.output.message;
+                
                  SetMessage(prevMessages => [
                     ...(prevMessages || []),
                     { type: "CHAT", sender:"n8n", content: messageContent }

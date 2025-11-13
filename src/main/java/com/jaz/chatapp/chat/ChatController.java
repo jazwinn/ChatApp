@@ -7,6 +7,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,11 +41,17 @@ public class ChatController {
     }
 
     @MessageMapping("/chat.loadMessages")
-    public void loadMessages(SimpMessageHeaderAccessor headerAccessor){
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
+    public void loadMessages(SimpMessageHeaderAccessor accessor) {
+        String username = (String) accessor.getSessionAttributes().get("username");
+        if (username == null) {
+            System.out.println("Username missing in session!");
+            return;
+        }
+
         List<ChatMessage> messages = chatDao.findAll();
+        System.out.println("Sending " + messages.size() + " messages to user: " + username);
         simpMessagingTemplate.convertAndSendToUser(username, "/queue/messages", messages);
-        System.out.println("Sending messages to user: " + username + " -> " + messages);
     }
+
 
 }
